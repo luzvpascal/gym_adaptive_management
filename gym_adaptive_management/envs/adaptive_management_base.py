@@ -29,10 +29,14 @@ class AdaptiveManagement(gym.Env):
         self.Tmax = Tmax
 
         #
-        self.N_actions = self.transition_function.unwrapped.shape[1]
-        self.N_states = self.transition_function.unwrapped.shape[2]
+        self.N_actions = self.transition_function.shape[1]
+        self.N_states = self.transition_function.shape[2]
+        self.N_models = self.transition_function.shape[0]
+
+        #self.N_actions = self.transition_function.unwrapped.shape[1]
+        #self.N_states = self.transition_function.unwrapped.shape[2]
+        # self.N_models = self.transition_function.unwrapped.shape[0]
         self.vect_of_states = np.arange(self.N_states)
-        self.N_models = self.transition_function.unwrapped.shape[0]
         self.time_step = 0
 
         #if the initial belief is not provided, uniform belief is the default.
@@ -58,7 +62,7 @@ class AdaptiveManagement(gym.Env):
         # Example when using discrete actions, we have two: left and right
         # The observation will be the coordinate of the agent
         # this can be described both by Discrete and Box space
-        self.action_space = spaces.Discrete(N_actions)
+        self.action_space = spaces.Discrete(self.N_actions)
         self.observation_space = spaces.Dict({
             "state": spaces.Discrete(2),
             "belief": spaces.Box(0, 1, shape=(self.N_models,))

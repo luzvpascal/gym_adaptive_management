@@ -17,8 +17,15 @@ def test_adaptive_management_base():
                         ]).reshape(2, 2)
 
     env = gym.make('AdaptiveManagement-v0',
-                    transition_function=transition_function,
-                    reward_function=reward_function,
+                    params = {"init_state": 0,
+                            "transition_function": transition_function,
+                            "reward_function": reward_function},
                     Tmax=100)
+    # If the environment doesn't follow the interface, an error will be thrown
+    check_env(env, warn=True)
+
+def test_adaptive_management_development():
+
+    env = gym.make('TechnoDevEnv-v0')
     # If the environment doesn't follow the interface, an error will be thrown
     check_env(env, warn=True)

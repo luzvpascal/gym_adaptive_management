@@ -29,13 +29,13 @@ class TechnoDevEnv(AdaptiveManagement):
         init_belief_success: initial belief in development success
     """
     def __init__(
+        self,
         p_dev = 0.1,
         Rbau = 0.7,
         Rdep = 0.8,
         Cdev = 0.001,
         init_belief_success = 0.5,
     ):
-
         transition_function = np.array([
                                 1, 0, 0, 1,
                                 1-p_dev, p_dev, 0, 1,
@@ -52,7 +52,7 @@ class TechnoDevEnv(AdaptiveManagement):
             params={"init_state": 0,
                     "transition_function": transition_function,
                     "reward_function": reward_function,
-                    "init_belief": np.array[init_belief_success, 1-init_belief_success]},
+                    "init_belief": np.array([init_belief_success, 1-init_belief_success])},
             Tmax=100,
             render_mode="console",
         )
