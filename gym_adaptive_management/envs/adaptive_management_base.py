@@ -12,48 +12,59 @@ class AdaptiveManagement(gym.Env):
     # Because of google colab, we cannot implement the GUI ('human' render mode)
     metadata = {"render_modes": ["console"]}
 
-    # Define constants for clearer code
-    DO_NOTHING = 0
-    INVEST = 1
+    def __init__(
+                self,
+                params,
+                Tmax=100,
+                render_mode="console",
+    ):
 
-    IDLE = 0
-    READY = 1
-
-    def __init__(self, transition_function, reward_function, #true_model_index=0,
-                 Tmax=100, render_mode="console"):
         super(AdaptiveManagement, self).__init__()
         self.render_mode = render_mode
 
-        # Size of the 1D-grid
-        N_states = 2
-        # Initialize the agent at the right of the grid
-        self.state = self.IDLE
+        # Parameters
+        self.init_state = params["init_state"]
+        self.transition_function = params["transition_function"]
+        self.reward_function = params["reward_function"]
+        self.Tmax = Tmax
+
+        #
+        self.N_actions = self.transition_function.unwrapped.shape[1]
+        self.N_states = self.transition_function.unwrapped.shape[2]
+        self.vect_of_states = np.arange(self.N_states)
+        self.N_models = self.transition_function.unwrapped.shape[0]
+        self.time_step = 0
+
+        #if the initial belief is not provided, uniform belief is the default.
+        if "init_belief" in params:
+            self.init_belief = params["init_belief"]
+            self.belief = params["init_belief"]
+        else:
+            self.init_belief = np.ones(self.N_models)/self.N_models
+            self.belief = np.ones(self.N_models)/self.N_models
+
+        #if the true model index is not provided, the model is sampled according to the initial belief
+        if "true_model_index" in params:
+            self.true_model_index = params["true_model_index"]
+            self.random_model = False
+        else:
+            self.true_model_index = np.random.choice([0,1], 1, p=self.init_belief)[0]
+            self.random_model = True
+
+        self.true_transition_model = self.transition_function[self.true_model_index]
 
         # Define action and observation space
         # They must be gym.spaces objects
         # Example when using discrete actions, we have two: left and right
-        N_actions = 2
-        self.action_space = spaces.Discrete(N_actions)
         # The observation will be the coordinate of the agent
         # this can be described both by Discrete and Box space
-        self.transition_function = transition_function
-        self.N_transition_function = self.transition_function.unwrapped.shape[0]
-        self.reward_function = reward_function
-
-        self.belief = np.ones(self.N_transition_function)/self.N_transition_function
-        self.time_step = 0
-
-        self.true_model_index = np.random.choice([0,1], 1, p=self.belief)[0]
-        self.true_transition_model = self.transition_function[self.true_model_index]
-
-        self.Tmax = Tmax
-
+        self.action_space = spaces.Discrete(N_actions)
         self.observation_space = spaces.Dict({
-                                        "state": spaces.Discrete(2),
-                                        "belief": spaces.Box(0, 1, shape=(self.N_transition_function,))
-                                        #,
-                                        #"time_step": spaces.Discrete(self.Tmax)
-                                        })
+            "state": spaces.Discrete(2),
+            "belief": spaces.Box(0, 1, shape=(self.N_models,))
+            #,
+            #"time_step": spaces.Discrete(self.Tmax)
+        })
 
     def reset(self, seed=None, options=None):
         """
@@ -61,9 +72,14 @@ class AdaptiveManagement(gym.Env):
         """
         super().reset(seed=seed, options=options)
 
-        self.state = self.IDLE
-        self.belief = np.ones(self.N_transition_function) / self.N_transition_function
+        self.state = self.init_state
+        self.belief = self.init_belief
         self.time_step = 0
+
+        #if the true model index is not provided, the model is sampled according to the initial belief
+        if self.random_model:
+            self.true_model_index = np.random.choice([0,1], 1, p=self.init_belief)[0]
+            self.true_transition_model = self.transition_function[self.true_model_index]
 
         state = int(self.state)  # 0 or 1
         belief = self.belief.copy().astype(np.float32)
@@ -74,44 +90,31 @@ class AdaptiveManagement(gym.Env):
                        }
         info = {}
 
-        if self.true_model_index ==1:
-            self.true_model_index = 0
-        else:
-            self.true_model_index = 1
-
-        #self.true_model_index = np.random.choice([0,1], 1, p=self.belief)[0]
-
-        self.true_transition_model = self.transition_function[self.true_model_index]
-
         return observation, info
 
 
     def step(self, action):
-        if action == self.DO_NOTHING or action==self.INVEST:
-            # obtain reward
-            reward = self.reward_function[self.state][action]
 
-            #new state
-            elements = [self.IDLE, self.READY]
-            current_state = self.state
-            probabilities = self.true_transition_model[action][current_state]
-            self.state = np.random.choice(elements, 1, p=probabilities)[0]
+        # obtain reward
+        reward = self.reward_function[self.state][action]
 
-            #update belief
-            self.update_belief(action, self.state,current_state)
+        #new state
+        current_state = self.state
+        probabilities = self.true_transition_model[action][current_state]
+        self.state = np.random.choice(self.vect_of_states, 1, p=probabilities)[0]
 
-            #update time step
-            self.time_step += 1
-        else:
-            raise ValueError(
-                f"Received invalid action={action} which is not part of the action space"
-            )
+        #update belief
+        self.update_belief(action, self.state,current_state)
+
+        #update time step
+        self.time_step += 1
+
 
         # Are we at the left of the grid?
         terminated = bool(self.time_step == self.Tmax)
         truncated = False  # we do not limit the number of steps here
 
-        state = int(self.state)  # 0 or 1
+        state = int(self.state)
         belief = self.belief.copy().astype(np.float32)
         time_step = int(self.time_step)
         observation = {"state": state, "belief": belief
@@ -131,8 +134,8 @@ class AdaptiveManagement(gym.Env):
 
     def update_belief(self,action,new_observation,past_observation):
 
-      new_belief = np.zeros(self.N_transition_function)
-      for k in range(self.N_transition_function):
+      new_belief = np.zeros(self.N_models)
+      for k in range(self.N_models):
         new_belief[k] = self.transition_function[k][action][past_observation][new_observation]*self.belief[k]
 
       new_belief = new_belief/np.sum(new_belief)
