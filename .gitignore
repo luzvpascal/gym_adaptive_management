@@ -7,7 +7,7 @@
 __pycache__
 dist/
 build/
-*.egg-info/
+gym_adaptive_management.egg-info/*
 
 */__pycache__/
 _build/
