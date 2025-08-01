@@ -1,0 +1,17 @@
+.Rproj.user
+*.Rproj
+.Renviron
+.Rhistory
+*.pth
+*.cpython-*.pyc
+__pycache__
+dist/
+build/
+*.egg-info
+
+__pycache__/
+_build/
+
+# Setuptools distribution and build folders.
+/dist/
+/build
