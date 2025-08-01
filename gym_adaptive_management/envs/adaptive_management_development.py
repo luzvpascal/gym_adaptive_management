@@ -35,6 +35,7 @@ class TechnoDevEnv(AdaptiveManagement):
         Rdep = 0.8,
         Cdev = 0.001,
         init_belief_success = 0.5,
+        Tmax=100,
     ):
         transition_function = np.array([
                                 1, 0, 0, 1,
@@ -53,6 +54,6 @@ class TechnoDevEnv(AdaptiveManagement):
                     "transition_function": transition_function,
                     "reward_function": reward_function,
                     "init_belief": np.array([init_belief_success, 1-init_belief_success])},
-            Tmax=100,
+            Tmax=Tmax,
             render_mode="console",
         )
