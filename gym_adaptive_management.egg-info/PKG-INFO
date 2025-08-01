@@ -1,8 +1,0 @@
-Metadata-Version: 2.1
-Name: gym_adaptive_management
-Version: 0.1.0
-Summary: Python library gathering examples of adaptive management problems as gymnasium environments
-Author: Luz V. Pascal
-Requires-Dist: stable_baselines3
-Requires-Dist: gymnasium
-Requires-Dist: numpy
