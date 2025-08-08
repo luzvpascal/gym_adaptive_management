@@ -55,6 +55,7 @@ class TechnoDevEnv(AdaptiveManagement):
                     "reward_function": reward_function,
                     "init_belief": np.array([init_belief_success, 1-init_belief_success])},
             Tmax=Tmax,
+            see_belief=True,
             render_mode="console",
         )
 
@@ -109,5 +110,6 @@ class TechnoDevEnvNoBelief(AdaptiveManagementNoBelief):
                     "reward_function": reward_function,
                     "init_belief": np.array([init_belief_success, 1-init_belief_success])},
             Tmax=Tmax,
+            see_belief=False,
             render_mode="console",
         )
