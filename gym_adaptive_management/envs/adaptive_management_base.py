@@ -39,6 +39,7 @@ class AdaptiveManagement(gym.Env):
         #self.N_states = self.transition_function.unwrapped.shape[2]
         # self.N_models = self.transition_function.unwrapped.shape[0]
         self.vect_of_states = np.arange(self.N_states)
+        self.vect_of_models = np.arange(self.N_models)
         self.time_step = 0
 
         #if the initial belief is not provided, uniform belief is the default.
@@ -54,7 +55,7 @@ class AdaptiveManagement(gym.Env):
             self.true_model_index = params["true_model_index"]
             self.random_model = False
         else:
-            self.true_model_index = np.random.choice([0,1], 1, p=self.init_belief)[0]
+            self.true_model_index = np.random.choice(self.vect_of_models, 1, p=self.init_belief)[0]
             self.random_model = True
 
         self.true_transition_model = self.transition_function[self.true_model_index]
