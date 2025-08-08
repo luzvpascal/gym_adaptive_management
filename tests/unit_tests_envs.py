@@ -9,8 +9,14 @@ from gymnasium.envs.registration import register
 print("AdaptiveManagement-v0 in registry:")
 print('AdaptiveManagement-v0' in gym.envs.registry.keys())
 
+print("AdaptiveManagement-v1 in registry:")
+print('AdaptiveManagement-v1' in gym.envs.registry.keys())
+
 print("TechnoDevEnv-v0 in registry:")
 print('TechnoDevEnv-v0' in gym.envs.registry.keys())
+
+print("TechnoDevEnv-v1 in registry:")
+print('TechnoDevEnv-v1' in gym.envs.registry.keys())
 
 # transition_function = np.array([
 #                         1, 0, 0, 1,
