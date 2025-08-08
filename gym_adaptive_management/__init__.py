@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gymnasium.envs.registration import register
-from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement, AdaptiveManagementNoBelief
+from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
 from gym_adaptive_management.envs.adaptive_management_development import TechnoDevEnv, TechnoDevEnvNoBelief
 register(
     id='AdaptiveManagement-v0',  # Environment ID, used to make the environment

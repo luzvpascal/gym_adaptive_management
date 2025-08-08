@@ -2,7 +2,7 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 
-from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement, AdaptiveManagementNoBelief
+from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
 
 
 class TechnoDevEnv(AdaptiveManagement):
@@ -59,7 +59,7 @@ class TechnoDevEnv(AdaptiveManagement):
             render_mode="console",
         )
 
-class TechnoDevEnvNoBelief(AdaptiveManagementNoBelief):
+class TechnoDevEnvNoBelief(AdaptiveManagement):
     """
     This class defines the problem of technology development with uncertain development success
     The POMDP is defined as:
