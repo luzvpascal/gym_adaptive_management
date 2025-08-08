@@ -6,7 +6,7 @@ from gymnasium import spaces
 class AdaptiveManagement(gym.Env):
     """
     Custom Environment that follows gym interface.
-    This is a base environment for adaptive management problems
+    This is a base environment for adaptive management problems with a finite state and action space
     """
 
     # Because of google colab, we cannot implement the GUI ('human' render mode)
@@ -57,6 +57,10 @@ class AdaptiveManagement(gym.Env):
 
         self.true_transition_model = self.transition_function[self.true_model_index]
 
+        if "discount_factor" in params:
+            self.discount_factor = params["discount_factor"]
+        else:
+            self.discount_factor = 0.9
         # Define action and observation space
         # They must be gym.spaces objects
         # Example when using discrete actions, we have two: left and right
@@ -100,7 +104,7 @@ class AdaptiveManagement(gym.Env):
     def step(self, action):
 
         # obtain reward
-        reward = self.reward_function[self.state][action]
+        reward = self.discount_factor**(self.time_step)*self.reward_function[self.state][action]
 
         #new state
         current_state = self.state
