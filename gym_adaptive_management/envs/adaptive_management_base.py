@@ -48,6 +48,11 @@ class AdaptiveManagement(gym.Env):
         else:
             self.randomize_initial_belief = False
 
+        if "init_belief" in params:
+            self.init_belief = params["init_belief"]
+        else:
+            self.init_belief = np.ones(self.N_models)/self.N_models
+
         self.initialise_belief()
         self.belief = self.init_belief
 
@@ -167,11 +172,6 @@ class AdaptiveManagement(gym.Env):
         if self.randomize_initial_belief:
             self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
             self.init_belief  /= self.init_belief.sum()
-        else:
-            if "init_belief" in params:
-                self.init_belief = params["init_belief"]
-            else:
-                self.init_belief = np.ones(self.N_models)/self.N_models
 
     def render(self):
         # agent is represented as a cross, rest as a dot
