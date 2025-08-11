@@ -31,13 +31,13 @@ class TechnoDevEnv(AdaptiveManagement):
     def __init__(
         self,
         p_dev = 0.1,
-        Rbau = 0.7,
-        Rdep = 0.8,
+        Rbau = 0,
+        Rdep = 0.1,
         Cdev = 0.001,
         randomize_initial_belief = True,
         init_belief_success = 0.5,
         Tmax=100,
-        discount_factor=1
+        discount_factor=0.95
     ):
         transition_function = np.array([
                                 1, 0, 0, 1,
