@@ -34,6 +34,7 @@ class TechnoDevEnv(AdaptiveManagement):
         Rbau = 0.7,
         Rdep = 0.8,
         Cdev = 0.001,
+        randomize_initial_belief = True,
         init_belief_success = 0.5,
         Tmax=100,
         discount_factor=1
@@ -55,6 +56,7 @@ class TechnoDevEnv(AdaptiveManagement):
                     "transition_function": transition_function,
                     "reward_function": reward_function,
                     "init_belief": np.array([init_belief_success, 1-init_belief_success]),
+                    "randomize_initial_belief": randomize_initial_belief,
                     "discount_factor": discount_factor},
             Tmax=Tmax,
             see_belief=True,

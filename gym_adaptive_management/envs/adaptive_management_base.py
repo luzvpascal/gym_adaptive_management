@@ -43,12 +43,13 @@ class AdaptiveManagement(gym.Env):
         self.time_step = 0
 
         #if the initial belief is not provided, uniform belief is the default.
-        if "init_belief" in params:
-            self.init_belief = params["init_belief"]
-            self.belief = params["init_belief"]
+        if "randomize_initial_belief" in params:
+            self.randomize_initial_belief = params["randomize_initial_belief"]
         else:
-            self.init_belief = np.ones(self.N_models)/self.N_models
-            self.belief = np.ones(self.N_models)/self.N_models
+            self.randomize_initial_belief = False
+
+        self.initialise_belief()
+        self.belief = self.init_belief
 
         #if the true model index is not provided, the model is sampled according to the initial belief
         if "true_model_index" in params:
@@ -88,6 +89,7 @@ class AdaptiveManagement(gym.Env):
         super().reset(seed=seed, options=options)
 
         self.state = self.init_state
+        self.initialise_belief()
         self.belief = self.init_belief
         self.time_step = 0
 
@@ -160,6 +162,16 @@ class AdaptiveManagement(gym.Env):
       np.clip(new_belief, 0, 1)
       self.belief = new_belief
 
+
+    def initialise_belief(self,seed=None):
+        if self.randomize_initial_belief:
+            self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
+            self.init_belief  /= self.init_belief.sum()
+        else:
+            if "init_belief" in params:
+                self.init_belief = params["init_belief"]
+            else:
+                self.init_belief = np.ones(self.N_models)/self.N_models
 
     def render(self):
         # agent is represented as a cross, rest as a dot
