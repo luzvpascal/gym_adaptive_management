@@ -3,7 +3,7 @@ import gymnasium as gym
 from gymnasium import spaces
 
 
-class AdaptiveManagement(gym.Env):
+class AdaptiveManagementBeliefMDP(gym.Env):
     """
     Custom Environment that follows gym interface.
     This is a base environment for adaptive management problems with a finite state and action space
@@ -20,7 +20,7 @@ class AdaptiveManagement(gym.Env):
                 render_mode="console",
     ):
 
-        super(AdaptiveManagement, self).__init__()
+        super(AdaptiveManagementBeliefMDP, self).__init__()
         self.render_mode = render_mode
         self.see_belief = see_belief
 
@@ -49,16 +49,6 @@ class AdaptiveManagement(gym.Env):
         else:
             self.init_belief = np.ones(self.N_models)/self.N_models
             self.belief = np.ones(self.N_models)/self.N_models
-
-        #if the true model index is not provided, the model is sampled according to the initial belief
-        if "true_model_index" in params:
-            self.true_model_index = params["true_model_index"]
-            self.random_model = False
-        else:
-            self.true_model_index = np.random.choice(self.vect_of_models, 1, p=self.init_belief)[0]
-            self.random_model = True
-
-        self.true_transition_model = self.transition_function[self.true_model_index]
 
         if "discount_factor" in params:
             self.discount_factor = params["discount_factor"]
@@ -91,16 +81,11 @@ class AdaptiveManagement(gym.Env):
         self.belief = self.init_belief
         self.time_step = 0
 
-        #if the true model index is not provided, the model is sampled according to the initial belief
-        if self.random_model:
-            self.true_model_index = np.random.choice(self.vect_of_models, 1, p=self.init_belief)[0]
-            self.true_transition_model = self.transition_function[self.true_model_index]
-
         state = int(self.state)  # 0 or 1
-        belief = self.belief.copy().astype(np.float32)
         #time_step = int(self.time_step)
 
         if self.see_belief:
+            belief = self.belief.copy().astype(np.float32)
             observation = {"state": state, "belief": belief}
         else:
             observation = {"state": state}
@@ -117,7 +102,7 @@ class AdaptiveManagement(gym.Env):
 
         #new state
         current_state = self.state
-        probabilities = self.true_transition_model[action][current_state]
+        probabilities = self.belief_MPD_observation_probabilities(action)
         self.state = np.random.choice(self.vect_of_states, 1, p=probabilities)[0]
 
         #update belief
@@ -132,9 +117,8 @@ class AdaptiveManagement(gym.Env):
         truncated = False  # we do not limit the number of steps here
 
         state = int(self.state)
-        belief = self.belief.copy().astype(np.float32)
-        time_step = int(self.time_step)
         if self.see_belief:
+            belief = self.belief.copy().astype(np.float32)
             observation = {"state": state, "belief": belief}
         else:
             observation = {"state": state}
@@ -151,14 +135,21 @@ class AdaptiveManagement(gym.Env):
         )
 
     def update_belief(self,action,new_observation,past_observation):
+        new_belief = np.zeros(self.N_models)
+        for k in range(self.N_models):
+            new_belief[k] = self.transition_function[k][action][past_observation][new_observation]*self.belief[k]
 
-      new_belief = np.zeros(self.N_models)
-      for k in range(self.N_models):
-        new_belief[k] = self.transition_function[k][action][past_observation][new_observation]*self.belief[k]
+        new_belief = new_belief/np.sum(new_belief)
+        np.clip(new_belief, 0, 1)
+        self.belief = new_belief
 
-      new_belief = new_belief/np.sum(new_belief)
-      np.clip(new_belief, 0, 1)
-      self.belief = new_belief
+    def belief_MPD_observation_probabilities(self,action):
+        probabilities = np.zeros(self.N_states)
+        for k in range(self.N_states):
+            for i in range(self.N_models):
+                probabilities[k]+=self.transition_function[i][action][self.state][k]*self.belief[i]
+        return(probabilities)
+
 
 
     def render(self):
