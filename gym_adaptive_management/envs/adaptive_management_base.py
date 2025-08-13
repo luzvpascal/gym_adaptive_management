@@ -173,7 +173,7 @@ class AdaptiveManagement(gym.Env):
             # self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
             # self.init_belief  /= self.init_belief.sum()
             rng = np.random.default_rng(seed)
-            alpha = np.array([0.2, 0.2])  # < 1 means skew toward corners
+            alpha = np.array([0.2, 1.2])  # < 1 means skew toward corners
             self.init_belief = rng.dirichlet(alpha)
 
     def render(self):
