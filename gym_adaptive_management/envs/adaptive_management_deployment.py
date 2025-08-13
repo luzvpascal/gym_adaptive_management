@@ -22,6 +22,7 @@ class TechDeployEnv(gym.Env):
                 self,
                 params = {"values_delta_t_K":np.array([1,2.5]),
                         "scenario": "SSP2_4_5",
+                        "init_state": 0.8,
                         "init_belief": np.array([0.5,0.5])},
                 Tmax=100,
                 see_belief=True,
@@ -39,7 +40,7 @@ class TechDeployEnv(gym.Env):
             self.Tmax = len(self.data_temperatures)
 
             # Parameters of the model
-            self.init_state = 0.8 #initial state
+            self.init_state = params["init_state"] #initial state
             self.state = self.init_state
             self.time_step = 0
 
