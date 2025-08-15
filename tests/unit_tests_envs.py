@@ -13,11 +13,11 @@ print("TechnoDevEnv-v0 in registry:")
 print('TechnoDevEnv-v0' in gym.envs.registry.keys())
 
 
-print("TechnoDevEnvFlatOneHot-v0 in registry:")
-print('TechnoDevEnvFlatOneHot-v0' in gym.envs.registry.keys())
+print("TechnoDevEnvOneHot-v0 in registry:")
+print('TechnoDevEnvOneHot-v0' in gym.envs.registry.keys())
 
-print("TechnoDevEnvFlatOneHotNoBelief-v0 in registry:")
-print('TechnoDevEnvFlatOneHotNoBelief-v0' in gym.envs.registry.keys())
+print("TechnoDevEnvNoBelief-v0 in registry:")
+print('TechnoDevEnvNoBelief-v0' in gym.envs.registry.keys())
 # transition_function = np.array([
 #                         1, 0, 0, 1,
 #                         0.9, 0.1, 0, 1,
