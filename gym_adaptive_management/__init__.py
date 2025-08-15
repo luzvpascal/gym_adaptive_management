@@ -62,3 +62,21 @@ for env_id in registered_envs:
         id=f"{name}NoBelief-v{version}",
         entry_point=create_FlattenOneHotNoBeliefEnv(env_id),  # type: ignore[arg-type]
     )
+
+#####################################
+# Register FlattenOneHotNoStateEnv##
+#####################################
+def create_FlattenOneHotNoStateEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
+    def make_FlattenOneHotNoStateEnv() -> gym.Env:
+        env = gym.make(env_id)
+        env = FlattenOneHotNoStateEnv(env)
+        env = Monitor(env)
+        return env
+    return make_FlattenOneHotNoStateEnv
+
+for env_id in registered_envs:
+    name, version = env_id.split("-v")
+    register(
+        id=f"{name}NoState-v{version}",
+        entry_point=create_FlattenOneHotNoStateEnv(env_id),  # type: ignore[arg-type]
+    )

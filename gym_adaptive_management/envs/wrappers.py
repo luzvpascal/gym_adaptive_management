@@ -43,3 +43,19 @@ class FlattenOneHotNoBeliefEnv(gym.ObservationWrapper):
         state_oh = np.zeros(self.N_states, dtype=np.float32)
         state_oh[obs["state"]] = 1.0
         return state_oh
+
+
+class FlattenOneHotNoStateEnv(gym.ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+
+        base_env = env.unwrapped  # get raw env with N_states, N_models
+
+        self.N_models = base_env.N_models
+        self.observation_space = Box(
+            low=0.0, high=1.0, shape=(self.N_models,), dtype=np.float32
+        )
+
+    def observation(self, obs):
+        belief = obs["belief"].astype(np.float32)
+        return belief
