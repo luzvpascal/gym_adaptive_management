@@ -62,13 +62,13 @@ check_env(env, warn=True)
 print("TechnoDevEnvFlatOneHotNoBelief successfully created")
 
 
-# ## train
-# print("Training started")
-# vec_env = make_vec_env(TechnoDevEnv, n_envs=4)
-# #model = A2C("MultiInputPolicy", vec_env, verbose=1).learn(5000)
-# # model =  PPO("MultiInputPolicy", vec_env, verbose=2, gamma=0.9).learn(100000)
-# model =  DQN("MultiInputPolicy", vec_env, verbose=1, gamma=0.8).learn(1000)
-# print("Training completed")
+## train
+print("Training started")
+vec_env = make_vec_env("TechnoDevEnvFlatOneHotNoBelief", n_envs=4)
+#model = A2C("MultiInputPolicy", vec_env, verbose=1).learn(5000)
+# model =  PPO("MultiInputPolicy", vec_env, verbose=2, gamma=0.9).learn(100000)
+model =  DQN("MlpPolicy", vec_env, verbose=1, gamma=0.8).learn(1000)
+print("Training completed")
 #
 # ## test environment
 # env = TechnoDevEnv()

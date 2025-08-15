@@ -8,12 +8,21 @@ from stable_baselines3.common.monitor import Monitor
 class FlattenAndOneHotEnv(gym.ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
+
+        base_env = env.unwrapped  # get raw env with N_states, N_models
+
+        self.N_states = base_env.N_states
+        self.N_models = base_env.N_models
+
         self.observation_space = Box(
-            low=0.0, high=1.0, shape=(self.env.N_states + self.env.N_models,), dtype=np.float32
+            low=0.0,
+            high=1.0,
+            shape=(self.N_states + self.N_models,),
+            dtype=np.float32
         )
 
     def observation(self, obs):
-        state_oh = np.zeros(self.env.N_states, dtype=np.float32)
+        state_oh = np.zeros(self.N_states, dtype=np.float32)
         state_oh[obs["state"]] = 1.0
         belief = obs["belief"].astype(np.float32)
         return np.concatenate([state_oh, belief])
@@ -22,11 +31,15 @@ class FlattenAndOneHotEnv(gym.ObservationWrapper):
 class FlattenOneHotNoBeliefEnv(gym.ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
+
+        base_env = env.unwrapped  # get raw env with N_states, N_models
+
+        self.N_states = base_env.N_states
         self.observation_space = Box(
-            low=0.0, high=1.0, shape=(self.env.N_states,), dtype=np.float32
+            low=0.0, high=1.0, shape=(self.N_states,), dtype=np.float32
         )
 
     def observation(self, obs):
-        state_oh = np.zeros(self.env.N_states, dtype=np.float32)
+        state_oh = np.zeros(self.N_states, dtype=np.float32)
         state_oh[obs["state"]] = 1.0
         return state_oh

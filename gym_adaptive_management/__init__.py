@@ -32,7 +32,7 @@ registered_envs = ['TechnoDevEnv-v0']#add new environments every time you create
 ##################################
 def create_FlattenAndOneHotEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
     def make_FlattenAndOneHotEnv() -> gym.Env:
-        env = gym.make(env_id, render_mode=render_mode)
+        env = gym.make(env_id)
         env = FlattenAndOneHotEnv(env)
         env = Monitor(env)
         return env
@@ -41,7 +41,7 @@ def create_FlattenAndOneHotEnv(env_id: str) -> Callable[[Optional[str]], gym.Env
 for env_id in registered_envs:
     name, version = env_id.split("-v")
     register(
-        id=f"{name}FlatOneHot-v{version}",
+        id=f"{name}OneHot-v{version}",
         entry_point=create_FlattenAndOneHotEnv(env_id),  # type: ignore[arg-type]
     )
 
@@ -50,7 +50,7 @@ for env_id in registered_envs:
 #####################################
 def create_FlattenOneHotNoBeliefEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
     def make_FlattenOneHotNoBeliefEnv() -> gym.Env:
-        env = gym.make(env_id, render_mode=render_mode)
+        env = gym.make(env_id)
         env = FlattenOneHotNoBeliefEnv(env)
         env = Monitor(env)
         return env
@@ -59,6 +59,6 @@ def create_FlattenOneHotNoBeliefEnv(env_id: str) -> Callable[[Optional[str]], gy
 for env_id in registered_envs:
     name, version = env_id.split("-v")
     register(
-        id=f"{name}FlatOneHotNoBelief-v{version}",
+        id=f"{name}NoBelief-v{version}",
         entry_point=create_FlattenOneHotNoBeliefEnv(env_id),  # type: ignore[arg-type]
     )
