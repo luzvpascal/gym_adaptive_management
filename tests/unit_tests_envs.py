@@ -12,18 +12,12 @@ print('AdaptiveManagement-v0' in gym.envs.registry.keys())
 print("TechnoDevEnv-v0 in registry:")
 print('TechnoDevEnv-v0' in gym.envs.registry.keys())
 
-print("TechnoDevEnv-v1 in registry:")
-print('TechnoDevEnv-v1' in gym.envs.registry.keys())
 
-print("AdaptiveManagementBeliefMDP-v0 in registry:")
-print('AdaptiveManagementBeliefMDP-v0' in gym.envs.registry.keys())
+print("TechnoDevEnvFlatOneHot-v0 in registry:")
+print('TechnoDevEnvFlatOneHot-v0' in gym.envs.registry.keys())
 
-print("TechnoDevEnvBeliefMDP-v0 in registry:")
-print('TechnoDevEnvBeliefMDP-v0' in gym.envs.registry.keys())
-
-print("TechnoDevEnvBeliefMDP-v1 in registry:")
-print('TechnoDevEnvBeliefMDP-v1' in gym.envs.registry.keys())
-
+print("TechnoDevEnvFlatOneHotNoBelief-v0 in registry:")
+print('TechnoDevEnvFlatOneHotNoBelief-v0' in gym.envs.registry.keys())
 # transition_function = np.array([
 #                         1, 0, 0, 1,
 #                         0.9, 0.1, 0, 1,
@@ -54,11 +48,18 @@ print('TechnoDevEnvBeliefMDP-v1' in gym.envs.registry.keys())
 # check_env(env2, warn=True)
 # print("Environment 2 successfully created")
 
-# env3 = TechnoDevEnvNoBelief()
-env3 = gym.make('TechnoDevEnvBeliefMDP-v0')
-# # If the environment doesn't follow the interface, an error will be thrown
-check_env(env3, warn=True)
-print("Environment 3 successfully created")
+env = gym.make('TechnoDevEnv-v0')
+check_env(env, warn=True)
+print("TechnoDevEnv successfully created")
+
+env = gym.make('TechnoDevEnvFlatOneHot-v0')
+check_env(env, warn=True)
+print("TechnoDevEnvFlatOneHot successfully created")
+
+
+env = gym.make('TechnoDevEnvFlatOneHotNoBelief-v0')
+check_env(env, warn=True)
+print("TechnoDevEnvFlatOneHotNoBelief successfully created")
 
 
 # ## train
