@@ -9,13 +9,24 @@ class FlattenAndOneHotEnv(gym.ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
         self.observation_space = Box(
-            low=0.0, high=1.0, shape=(self.env.N_models,), dtype=np.float32
-            # low=0.0, high=1.0, shape=(self.env.N_states + self.env.N_models,), dtype=np.float32
+            low=0.0, high=1.0, shape=(self.env.N_states + self.env.N_models,), dtype=np.float32
         )
 
     def observation(self, obs):
         state_oh = np.zeros(self.env.N_states, dtype=np.float32)
         state_oh[obs["state"]] = 1.0
         belief = obs["belief"].astype(np.float32)
-        return belief
-        # return np.concatenate([state_oh, belief])
+        return np.concatenate([state_oh, belief])
+
+
+class FlattenOneHotNoBeliefEnv(gym.ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.observation_space = Box(
+            low=0.0, high=1.0, shape=(self.env.N_states,), dtype=np.float32
+        )
+
+    def observation(self, obs):
+        state_oh = np.zeros(self.env.N_states, dtype=np.float32)
+        state_oh[obs["state"]] = 1.0
+        return state_oh

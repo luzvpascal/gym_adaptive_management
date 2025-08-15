@@ -1,20 +1,19 @@
 import gymnasium as gym
 from gymnasium.envs.registration import register
 from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
-from gym_adaptive_management.envs.adaptive_management_beliefMDP import AdaptiveManagementBeliefMDP
+from gym_adaptive_management.envs.adaptive_management_development import TechnoDevEnv
 
-from gym_adaptive_management.envs.adaptive_management_development import TechnoDevEnv, TechnoDevEnvNoBelief
-from gym_adaptive_management.envs.adaptive_management_development_beliefMDP import TechnoDevEnvBeliefMDP, TechnoDevEnvNoBeliefBeliefMDP
+from gym_adaptive_management.envs.wrappers import FlattenAndOneHotEnv, FlattenOneHotNoBeliefEnv
+from stable_baselines3.common.monitor import Monitor
+
+##################################
+# Register coded environments ####
+##################################
 
 #adaptive management general
 register(
     id='AdaptiveManagement-v0',  # Environment ID, used to make the environment
     entry_point='gym_adaptive_management.envs.adaptive_management_base:AdaptiveManagement',  # The entry point to your environment class
-    max_episode_steps=100,  # Max number of steps per episode
-)
-register(
-    id='AdaptiveManagementBeliefMDP-v0',  # Environment ID, used to make the environment
-    entry_point='gym_adaptive_management.envs.adaptive_management_beliefMDP:AdaptiveManagementBeliefMDP',  # The entry point to your environment class
     max_episode_steps=100,  # Max number of steps per episode
 )
 
@@ -25,20 +24,40 @@ register(
     max_episode_steps=100,  # Max number of steps per episode
 )
 
-register(
-    id='TechnoDevEnv-v1',  # Environment ID, used to make the environment
-    entry_point='gym_adaptive_management.envs.adaptive_management_development:TechnoDevEnvNoBelief',  # The entry point to your environment class
-    max_episode_steps=100,  # Max number of steps per episode
-)
+registered_envs = ['TechnoDevEnv-v0']#add new environments every time you create one
 
-register(
-    id='TechnoDevEnvBeliefMDP-v0',  # Environment ID, used to make the environment
-    entry_point='gym_adaptive_management.envs.adaptive_management_development_beliefMDP:TechnoDevEnvBeliefMDP',  # The entry point to your environment class
-    max_episode_steps=100,  # Max number of steps per episode
-)
+##################################
+# Register FlattenAndOneHotEnv####
+##################################
+def create_FlattenAndOneHotEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
+    def make_FlattenAndOneHotEnv(render_mode: Optional[str] = None) -> gym.Env:
+        env = gym.make(env_id, render_mode=render_mode)
+        env = FlattenAndOneHotEnv(env)
+        env = Monitor(env)
+        return env
+    return make_FlattenAndOneHotEnv
 
-register(
-    id='TechnoDevEnvBeliefMDP-v1',  # Environment ID, used to make the environment
-    entry_point='gym_adaptive_management.envs.adaptive_management_development_beliefMDP:TechnoDevEnvNoBeliefBeliefMDP',  # The entry point to your environment class
-    max_episode_steps=100,  # Max number of steps per episode
-)
+for env_id in registered_envs:
+    name, version = env_id.split("-v")
+    register(
+        id=f"{name}FlatOneHot-v{version}",
+        entry_point=create_FlattenAndOneHotEnv(env_id),  # type: ignore[arg-type]
+    )
+
+#####################################
+# Register FlattenOneHotNoBeliefEnv##
+#####################################
+def create_FlattenOneHotNoBeliefEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
+    def make_FlattenOneHotNoBeliefEnv(render_mode: Optional[str] = None) -> gym.Env:
+        env = gym.make(env_id, render_mode=render_mode)
+        env = FlattenOneHotNoBeliefEnv(env)
+        env = Monitor(env)
+        return env
+    return make_FlattenOneHotNoBeliefEnv
+
+for env_id in registered_envs:
+    name, version = env_id.split("-v")
+    register(
+        id=f"{name}FlatOneHotNoBelief-v{version}",
+        entry_point=create_FlattenOneHotNoBeliefEnv(env_id),  # type: ignore[arg-type]
+    )

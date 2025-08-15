@@ -7,6 +7,17 @@ class AdaptiveManagement(gym.Env):
     """
     Custom Environment that follows gym interface.
     This is a base environment for adaptive management problems with a finite state and action space
+
+    Inputs:
+        params: Dict object containing:
+            init_state: initial state (int)
+            transition_function: transition function for each model (as an np array of size N_models, N_actions, N_states,N_states)
+            reward_function: reward_function (as an np array of size N_states,N_actions)
+            init_belief: np.array of the initial belief (if not provided, uniform)
+            randomize_initial_belief: bool indicating whether we need to randomize the initial belief (if not provided False)
+            true_model_index: index of the true model (in transition_function) (int). If not provided, the model is randomly chosen at each episode according to the initial belief
+            Tmax: horizon (int). If not provided, set to 100.
+            discount_factor: discount factor (float). If not provided, set to 0.9.
     """
 
     # Because of google colab, we cannot implement the GUI ('human' render mode)
@@ -15,21 +26,21 @@ class AdaptiveManagement(gym.Env):
     def __init__(
                 self,
                 params,
-                Tmax=100,
-                see_belief=True,
                 render_mode="console",
     ):
 
         super(AdaptiveManagement, self).__init__()
         self.render_mode = render_mode
-        self.see_belief = see_belief
 
         # Parameters
         self.init_state = params["init_state"]
         self.transition_function = params["transition_function"]
         self.reward_function = params["reward_function"]
-        self.Tmax = Tmax
-
+        #if the initial belief is not provided, uniform belief is the default.
+        if "Tmax" in params:
+            self.Tmax = params["Tmax"]
+        else:
+            self.Tmax = 100
         #
         self.N_actions = self.transition_function.shape[1]
         self.N_states = self.transition_function.shape[2]
@@ -77,15 +88,10 @@ class AdaptiveManagement(gym.Env):
         # this can be described both by Discrete and Box space
         self.action_space = spaces.Discrete(self.N_actions)
 
-        if self.see_belief:
-            self.observation_space = spaces.Dict({
-                "state": spaces.Discrete(self.N_states),
-                "belief": spaces.Box(0, 1, shape=(self.N_models,))
-            })
-        else:
-            self.observation_space = spaces.Dict({
-                "state": spaces.Discrete(self.N_states)
-            })
+        self.observation_space = spaces.Dict({
+            "state": spaces.Discrete(self.N_states),
+            "belief": spaces.Box(0, 1, shape=(self.N_models,))
+        })
 
     def reset(self, seed=None, options=None):
         """
@@ -107,10 +113,7 @@ class AdaptiveManagement(gym.Env):
         belief = self.belief.copy().astype(np.float32)
         #time_step = int(self.time_step)
 
-        if self.see_belief:
-            observation = {"state": state, "belief": belief}
-        else:
-            observation = {"state": state}
+        observation = {"state": state, "belief": belief}
 
         info = {}
 
@@ -141,10 +144,7 @@ class AdaptiveManagement(gym.Env):
         state = int(self.state)
         belief = self.belief.copy().astype(np.float32)
         time_step = int(self.time_step)
-        if self.see_belief:
-            observation = {"state": state, "belief": belief}
-        else:
-            observation = {"state": state}
+        observation = {"state": state, "belief": belief}
 
         # Optionally we can pass additional info, we are not using that for now
         info = {}
@@ -170,11 +170,11 @@ class AdaptiveManagement(gym.Env):
 
     def initialise_belief(self,seed=None):
         if self.randomize_initial_belief:
-            # self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
-            # self.init_belief  /= self.init_belief.sum()
-            rng = np.random.default_rng(seed)
-            alpha = np.array([0.2, 1.2])  # < 1 means skew toward corners
-            self.init_belief = rng.dirichlet(alpha)
+            self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
+            self.init_belief  /= self.init_belief.sum()
+            # rng = np.random.default_rng(seed)
+            # alpha = np.array([0.2, 1.2])  # < 1 means skew toward corners
+            # self.init_belief = rng.dirichlet(alpha)
 
     def render(self):
         # agent is represented as a cross, rest as a dot
