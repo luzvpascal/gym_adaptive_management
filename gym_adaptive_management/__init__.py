@@ -31,7 +31,7 @@ registered_envs = ['TechnoDevEnv-v0']#add new environments every time you create
 # Register FlattenAndOneHotEnv####
 ##################################
 def create_FlattenAndOneHotEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
-    def make_FlattenAndOneHotEnv(render_mode: Optional[str] = None) -> gym.Env:
+    def make_FlattenAndOneHotEnv() -> gym.Env:
         env = gym.make(env_id, render_mode=render_mode)
         env = FlattenAndOneHotEnv(env)
         env = Monitor(env)
@@ -49,7 +49,7 @@ for env_id in registered_envs:
 # Register FlattenOneHotNoBeliefEnv##
 #####################################
 def create_FlattenOneHotNoBeliefEnv(env_id: str) -> Callable[[Optional[str]], gym.Env]:
-    def make_FlattenOneHotNoBeliefEnv(render_mode: Optional[str] = None) -> gym.Env:
+    def make_FlattenOneHotNoBeliefEnv() -> gym.Env:
         env = gym.make(env_id, render_mode=render_mode)
         env = FlattenOneHotNoBeliefEnv(env)
         env = Monitor(env)
