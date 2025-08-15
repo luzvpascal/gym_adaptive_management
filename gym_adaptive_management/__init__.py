@@ -5,6 +5,7 @@ from gym_adaptive_management.envs.adaptive_management_development import TechnoD
 
 from gym_adaptive_management.envs.wrappers import FlattenAndOneHotEnv, FlattenOneHotNoBeliefEnv
 from stable_baselines3.common.monitor import Monitor
+from typing import Callable, Optional
 
 ##################################
 # Register coded environments ####
