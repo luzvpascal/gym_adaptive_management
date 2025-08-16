@@ -3,7 +3,7 @@ from gymnasium.envs.registration import register
 from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
 from gym_adaptive_management.envs.adaptive_management_development import TechnoDevEnv
 
-from gym_adaptive_management.envs.wrappers import FlattenAndOneHotEnv, FlattenOneHotNoBeliefEnv
+from gym_adaptive_management.envs.wrappers import FlattenAndOneHotEnv, FlattenOneHotNoBeliefEnv, FlattenOneHotNoStateEnv
 from stable_baselines3.common.monitor import Monitor
 from typing import Callable, Optional
 
