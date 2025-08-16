@@ -57,33 +57,38 @@ env = gym.make('TechnoDevEnv-v0')
 check_env(env, warn=True)
 print("TechnoDevEnv successfully created")
 
-env = gym.make('TechnoDevEnvFlatOneHot-v0')
+env = gym.make('TechnoDevEnvOneHot-v0')
 check_env(env, warn=True)
-print("TechnoDevEnvFlatOneHot successfully created")
+print("TechnoDevEnvOneHot successfully created")
 
 
-env = gym.make('TechnoDevEnvFlatOneHotNoBelief-v0')
+env = gym.make('TechnoDevEnvNoBelief-v0')
 check_env(env, warn=True)
-print("TechnoDevEnvFlatOneHotNoBelief successfully created")
+print("TechnoDevEnvNoBelief successfully created")
 
+
+env = gym.make('TechnoDevEnvNoState-v0')
+check_env(env, warn=True)
+print("TechnoDevEnvNoState successfully created")
 
 ## train
-print("Training started")
-vec_env = make_vec_env("TechnoDevEnvFlatOneHotNoBelief", n_envs=4)
+print("Training started TechnoDevEnvOneHot")
+vec_env = make_vec_env("TechnoDevEnvOneHot", n_envs=2)
 #model = A2C("MultiInputPolicy", vec_env, verbose=1).learn(5000)
 # model =  PPO("MultiInputPolicy", vec_env, verbose=2, gamma=0.9).learn(100000)
 model =  DQN("MlpPolicy", vec_env, verbose=1, gamma=0.8).learn(1000)
 print("Training completed")
-#
-# ## test environment
-# env = TechnoDevEnv()
-# obs, _ = env.reset()
-# env.true_model_index = 1 #failure
-# env.true_transition_model = env.transition_function[env.true_model_index]
-# n_steps = 100
-# for step in range(n_steps):
-#     action, _ = model.predict(obs, deterministic=True)
-#     print(f"Step {step + 1}")
-#     print("Action: ", action)
-#     obs, reward, terminated, truncated, info = env.step(action)
-#     print("obs=", obs, "reward=", reward, "done=", terminated)
+
+print("Training started TechnoDevEnvNoBelief")
+vec_env = make_vec_env("TechnoDevEnvNoBelief", n_envs=1)
+#model = A2C("MultiInputPolicy", vec_env, verbose=1).learn(5000)
+# model =  PPO("MultiInputPolicy", vec_env, verbose=2, gamma=0.9).learn(100000)
+model =  DQN("MlpPolicy", vec_env, verbose=1, gamma=0.8).learn(1000)
+print("Training completed")
+
+print("Training started TechnoDevEnvNoState")
+vec_env = make_vec_env("TechnoDevEnvNoState", n_envs=1)
+#model = A2C("MultiInputPolicy", vec_env, verbose=1).learn(5000)
+# model =  PPO("MultiInputPolicy", vec_env, verbose=2, gamma=0.9).learn(100000)
+model =  DQN("MlpPolicy", vec_env, verbose=1, gamma=0.8).learn(1000)
+print("Training completed")
