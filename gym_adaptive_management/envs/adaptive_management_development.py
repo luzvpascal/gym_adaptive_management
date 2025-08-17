@@ -22,22 +22,22 @@ class TechnoDevEnv(AdaptiveManagement):
         ready[Rbau,         Rdep]
 
     INPUTS:
-        pdev: probability of the technology transitionning from idle to ready if y = success and action = invest in R&D/deploy
-        Rbau: baseline rewards when action = do nothing
-        Rdep: expect rewards if the technology is successfully developed
-        Cdev: development costs
-        init_belief_success: initial belief in development success
-        randomize_initial_belief: bool indicating whether we need to randomize the initial belief (if not provided False)
-        init_belief_success: initial belief in development success. Default 0.5
-        Tmax: horizon (int). If not provided, set to 100.
+        pdev: probability of the technology transitionning from idle to ready if y = success and action = invest in R&D/deploy. Default 0.1.
+        Rbau: baseline rewards when action = do nothing. Default 0.
+        Rdep: expect rewards if the technology is successfully developed. Default 1.
+        Cdev: development costs. Default 0.01.
+        init_belief_success: initial belief in development success. Default 0.5.
+        randomize_initial_belief: bool indicating whether we need to randomize the initial belief. Default False.
+        init_belief_success: initial belief in development success. Default 0.5.
+        Tmax: horizon (int). Default 100.
         discount_factor: discount factor (float). Default 1.
     """
     def __init__(
         self,
         p_dev = 0.1,
         Rbau = 0,
-        Rdep = 0.1,
-        Cdev = 0.001,
+        Rdep = 1,
+        Cdev = 0.01,
         init_belief_success = 0.5,
         randomize_initial_belief = False,
         Tmax=100,
