@@ -6,11 +6,11 @@ from stable_baselines3 import PPO, A2C, DQN
 from stable_baselines3.common.env_util import make_vec_env
 from gymnasium.envs.registration import register
 import matplotlib.pyplot as plt
-from gym_adaptive_management.envs.adaptive_management_deployment import TechDeployEnv
+from gym_adaptive_management.envs.adaptive_management_deployment import TechnoDeployEnv
 
 from scipy.stats import norm
 
-env = TechDeployEnv()
+env = TechnoDeployEnv()
 
 print("Scenario:", env.scenario)
 print("Data (scenario filtered):\n", env.data_scenario)

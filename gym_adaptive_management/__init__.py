@@ -2,6 +2,7 @@ import gymnasium as gym
 from gymnasium.envs.registration import register
 from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
 from gym_adaptive_management.envs.adaptive_management_development import TechnoDevEnv
+from gym_adaptive_management.envs.adaptive_management_deployment import TechnoDeployEnv
 
 from gym_adaptive_management.envs.wrappers import FlattenAndOneHotEnv, FlattenOneHotNoBeliefEnv, FlattenOneHotNoStateEnv
 from stable_baselines3.common.monitor import Monitor
@@ -25,7 +26,15 @@ register(
     max_episode_steps=100,  # Max number of steps per episode
 )
 
-registered_envs = ['TechnoDevEnv-v0']#add new environments every time you create one
+
+#adaptive management technology deployment
+register(
+    id='TechnoDeployEnv-v0',  # Environment ID, used to make the environment
+    entry_point='gym_adaptive_management.envs.adaptive_management_deployment:TechnoDeployEnv',  # The entry point to your environment class
+    max_episode_steps=100,  # Max number of steps per episode
+)
+
+registered_envs = ['TechnoDevEnv-v0','TechnoDeployEnv-v0']#add new environments every time you create one
 
 ##################################
 # Register FlattenAndOneHotEnv####

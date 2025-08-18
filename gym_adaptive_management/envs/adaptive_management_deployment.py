@@ -6,8 +6,7 @@ from scipy.stats import norm
 from gym_adaptive_management.common.read_IPCC_data import load_IPCC_dataset
 from gym_adaptive_management.envs.adaptive_management_base import AdaptiveManagement
 
-class TechDeployEnv(AdaptiveManagement):
-# class TechDeployEnv(gym.Env):
+class TechnoDeployEnv(AdaptiveManagement):
     """
     Custom Environment that follows gym interface.
     This is an environment for technology deployment as an adaptive management problems
