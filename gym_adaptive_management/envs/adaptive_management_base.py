@@ -90,7 +90,8 @@ class AdaptiveManagement(gym.Env):
 
         self.observation_space = spaces.Dict({
             "state": spaces.Discrete(self.N_states),
-            "belief": spaces.Box(0, 1, shape=(self.N_models,))
+            "belief": spaces.Box(0, 1, shape=(self.N_models,)),
+            "time_step": spaces.Discrete(self.Tmax)
         })
 
     def reset(self, seed=None, options=None):
@@ -111,9 +112,9 @@ class AdaptiveManagement(gym.Env):
 
         state = int(self.state)  # 0 or 1
         belief = self.belief.copy().astype(np.float32)
-        #time_step = int(self.time_step)
+        time_step = int(self.time_step)
 
-        observation = {"state": state, "belief": belief}
+        observation = {"state": state, "belief": belief, "time_step": time_step}
 
         info = {}
 
@@ -144,7 +145,7 @@ class AdaptiveManagement(gym.Env):
         state = int(self.state)
         belief = self.belief.copy().astype(np.float32)
         time_step = int(self.time_step)
-        observation = {"state": state, "belief": belief}
+        observation = {"state": state, "belief": belief, "time_step":time_step}
 
         # Optionally we can pass additional info, we are not using that for now
         info = {}
@@ -158,23 +159,19 @@ class AdaptiveManagement(gym.Env):
         )
 
     def update_belief(self,action,new_observation,past_observation):
+        new_belief = np.zeros(self.N_models)
+        for k in range(self.N_models):
+            new_belief[k] = self.transition_function[k][action][past_observation][new_observation]*self.belief[k]
 
-      new_belief = np.zeros(self.N_models)
-      for k in range(self.N_models):
-        new_belief[k] = self.transition_function[k][action][past_observation][new_observation]*self.belief[k]
-
-      new_belief = new_belief/np.sum(new_belief)
-      np.clip(new_belief, 0, 1)
-      self.belief = new_belief
+        new_belief = new_belief/np.sum(new_belief)
+        np.clip(new_belief, 0, 1)
+        self.belief = new_belief
 
 
     def initialise_belief(self,seed=None):
         if self.randomize_initial_belief:
             self.init_belief  = np.random.rand(self.N_models)   # random numbers between 0 and 1
             self.init_belief  /= self.init_belief.sum()
-            # rng = np.random.default_rng(seed)
-            # alpha = np.array([0.2, 1.2])  # < 1 means skew toward corners
-            # self.init_belief = rng.dirichlet(alpha)
 
     def render(self):
         # agent is represented as a cross, rest as a dot
