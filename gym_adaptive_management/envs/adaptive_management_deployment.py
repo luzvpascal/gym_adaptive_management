@@ -26,6 +26,7 @@ class TechDeployEnv(AdaptiveManagement):
                 values_delta_t_K=np.array([1,2.5]),
                 scenario="SSP2_4_5",
                 init_state=0.8,
+                C_deploy=0.01,
                 init_belief=np.array([0.5,0.5]),
                 randomize_initial_belief = False,
                 discount_factor=1,
@@ -58,27 +59,20 @@ class TechDeployEnv(AdaptiveManagement):
 
             self.N_actions_transition = 3
             self.DEP_EFFECT = np.arange(self.N_actions_transition)
+            self.C_deploy = C_deploy
 
+            combined_transition_matrix = self.main_transition_function()
+            reward_matrix = self.main_reward_function()
             super().__init__(
                 params={"init_state": 0,
-                        "transition_function": np.zeros((self.N_values_delta_t_K, self.N_actions_transition,self.N_ecosystem,self.N_ecosystem)),
-                        "reward_function": np.zeros((self.N_ecosystem,self.N_actions_transition)),
-                        "init_belief": np.array([0.5,0.5]),
-                        "randomize_initial_belief": False,
-                        "discount_factor": 1,
+                        "transition_function": combined_transition_matrix,
+                        "reward_function": reward_matrix,
+                        "init_belief": init_belief,
+                        "randomize_initial_belief": randomize_initial_belief,
+                        "discount_factor": discount_factor,
                         "Tmax":self.N_times},
                 render_mode="console",
             )
-            # super().__init__(
-            #     params={"init_state": init_state,
-            #             "transition_function": transition_function,
-            #             "reward_function": reward_function,
-            #             "init_belief": init_belief,
-            #             "randomize_initial_belief": randomize_initial_belief,
-            #             "discount_factor": discount_factor,
-            #             "Tmax":Tmax},
-            #     render_mode="console",
-            # )
 
     def K_function(self,delta_t_crit,delta_t):
         """
@@ -355,8 +349,8 @@ class TechDeployEnv(AdaptiveManagement):
         combined_transition_matrix = np.zeros((
                 self.N_values_delta_t_K,
                 self.N_actions_transition,
-                self.N_ecosystem * self.Tmax,
-                self.N_ecosystem * self.Tmax
+                self.N_ecosystem * self.N_times,
+                self.N_ecosystem * self.N_times
         ))
 
         for index_delta_K in range(self.N_values_delta_t_K):
@@ -376,11 +370,11 @@ class TechDeployEnv(AdaptiveManagement):
             transition_times = self.transition_function_times()
 
             ## transition function of tupple ecosystem state x time state ####
-            combined_transition_matrix = self.transition_function_ecosystem_time(transition_ecosystem_time,
+            combined_matrix = self.transition_function_ecosystem_time(transition_ecosystem_time,
                                                                    transition_times)
 
             # Store result
-            combined_transition_matrix[index_delta_K] = np.moveaxis(combined_matrix, -1, 0)
+            combined_transition_matrix[index_delta_K] = combined_matrix
 
         return combined_transition_matrix
 
@@ -405,7 +399,7 @@ class TechDeployEnv(AdaptiveManagement):
 
         # Loop over actions
         for action_index in range(self.N_actions_transition):
-            reward_action = reward_BAU - (DEP_EFFECT[action_index] ** 2) * self.C_deploy
+            reward_action = reward_BAU - (self.DEP_EFFECT[action_index] ** 2) * self.C_deploy
 
             # Fill reward matrix for all times (except last absorbing time state)
             for t in range(self.N_times - 1):
