@@ -1,4 +1,4 @@
-TechnoDeployEnvTechnoDeployEnvTechnoDeployEnvimport gymnasium as gym
+import gymnasium as gym
 import gym_adaptive_management
 import numpy as np
 from stable_baselines3.common.env_checker import check_env
